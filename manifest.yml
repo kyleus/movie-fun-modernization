@@ -1,0 +1,9 @@
+---
+applications:
+- name: movie-fun-modernization
+  stack: cflinuxfs3
+  buildpacks:
+    - java_buildpack
+  memory: 1GB
+  routes:
+  - route: movie-fun-modernization-kyle-ryan.cfapps.io
