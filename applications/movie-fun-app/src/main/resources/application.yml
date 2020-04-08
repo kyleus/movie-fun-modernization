@@ -21,6 +21,6 @@ logging.level:
   org.superbiz.moviefun: DEBUG
 
 s3:
-  accessKey: AKIAT3CIUL6M3TP4BA4B
-  secretKey: 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
+  accessKey: 
+  secretKey: 
   bucketName: photo-storage
