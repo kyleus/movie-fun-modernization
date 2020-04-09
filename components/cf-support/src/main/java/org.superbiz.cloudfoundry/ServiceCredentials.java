@@ -1,4 +1,4 @@
-package org.superbiz.moviefun;
+package org.superbiz.cloudfoundry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class ServiceCredentials {
-
     private final String vcapServices;
 
     public ServiceCredentials(String vcapServices) {
