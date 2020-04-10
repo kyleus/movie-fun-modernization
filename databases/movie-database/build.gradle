@@ -1,0 +1,62 @@
+import org.flywaydb.gradle.FlywayExtension
+import org.flywaydb.gradle.task.FlywayMigrateTask
+
+buildscript {
+    dependencies {
+        classpath "mysql:mysql-connector-java:$mysqlVersion"
+    }
+}
+
+plugins {
+    id "org.flywaydb.flyway" version "5.2.1"
+}
+
+apply from: "../db.gradle"
+
+flyway {
+    url = "jdbc:mysql://localhost:3306/movies?useSSL=false"
+    user = "root"
+    outOfOrder = false
+}
+
+def tunnelProcess
+
+task openTunnel {
+    doLast {
+        println 'Opening Tunnel'
+        Thread.start {
+            tunnelProcess = "cf ssh -N -L 63306:${getMysqlHost("movie-database")} movie-service".execute()
+        }
+
+        sleep 5_000L
+
+        if (tunnelProcess == null) throw new Exception("Unable to open tunnel!")
+    }
+}
+
+task closeTunnel {
+    doLast {
+        println 'Closing Tunnel'
+        def proc_kill = "kill ${tunnelProcess}".execute()
+        proc_kill.waitFor()
+//        tunnelProcess.destroy()
+    }
+}
+
+task cfMigrate(type: FlywayMigrateTask, dependsOn: openTunnel) {
+    doFirst {
+        extension = setupProdFlywayExtension(new FlywayExtension(), "movie-database")
+    }
+}
+
+cfMigrate.finalizedBy closeTunnel
+
+//task cfMigrate(type: FlywayMigrateTask) {
+//    extension = new FlywayExtension(
+//            url: "jdbc:mysql://us-cdbr-iron-east-01.cleardb.net/ad_7a5330c215210fd",
+//            user: "beee7195897729",
+//            password: "e5bb47bc",
+//            outOfOrder: false,
+//            baselineOnMigrate: true
+//    )
+//}
